@@ -5,6 +5,8 @@
 #include <fstream>
 #include <print>
 #include <string>
+#include <functional>
+#include <cmath>
 
 inline std::string read_file(const std::filesystem::path& path)
 {
@@ -46,9 +48,9 @@ inline int parse_int(const std::string& data, size_t& pos)
 template <typename Int>
 constexpr Int math_mod(const Int dividend, const Int divisor)
 {
-    const Int result = dividend % divisor;
-    if ((result < 0 && divisor > 0) || (result > 0 && divisor < 0)) {
-        return result + divisor;
+    const Int remainder = dividend % divisor;
+    if (remainder < 0) {
+        return remainder + std::abs(divisor);
     }
-    return result;
+    return remainder;
 }
