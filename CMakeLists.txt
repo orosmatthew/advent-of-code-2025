@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.25)
+project(advent_of_code_2025)
+set(CMAKE_CXX_STANDARD 23)
+
+option(BENCHMARK "Enable benchmarking" OFF)
+if (BENCHMARK)
+	add_compile_definitions(BENCHMARK)
+endif ()
+
+if (WIN32)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static -stdlib=libc++ -lc++abi")
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static -static-libgcc -static-libstdc++")
+    endif ()
+endif ()
+
+add_executable(day01-part1 day01-part1/main.cpp)
