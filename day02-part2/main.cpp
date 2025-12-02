@@ -43,11 +43,15 @@ static uint64_t invalid_id_sum(const Range range)
                 invalid_ids.insert(value);
             }
         };
-        if (start_digits % check_digits == 0) {
+        if (start_digits == end_digits && start_digits % check_digits == 0) {
             check_times(start_digits / check_digits);
-        }
-        if (end_digits % check_digits == 0) {
-            check_times(end_digits / check_digits);
+        } else {
+            if (start_digits % check_digits == 0) {
+                check_times(start_digits / check_digits);
+            }
+            if (end_digits % check_digits == 0) {
+                check_times(end_digits / check_digits);
+            }
         }
     }
     return std::ranges::fold_left(invalid_ids, 0ULL, [](const uint64_t sum, const uint64_t value) {
@@ -69,7 +73,7 @@ int main()
 {
     const std::string data = read_file("./day02-part2/input.txt");
 #ifdef BENCHMARK
-    benchmark([&] { return solve(data); }, 10000);
+    benchmark([&] { return solve(data); }, 1000);
 #else
     std::println("{}", solve(data));
 #endif
