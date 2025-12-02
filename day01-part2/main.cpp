@@ -1,4 +1,4 @@
-#include "../utils.hpp"
+#include <utils.hpp>
 
 #include <print>
 
@@ -7,11 +7,11 @@ struct Rotation {
     int value;
 };
 
-static Rotation parse_rotation(const std::string& data, size_t& pos)
+static Rotation parse_rotation(const std::string& data, int& pos)
 {
     const int sign = data[pos] == 'L' ? -1 : 1;
     ++pos;
-    const int value = parse_int(data, pos);
+    const int value = parse_uint<int>(data, pos);
     return Rotation { sign, value };
 }
 
@@ -19,7 +19,7 @@ static int solve(const std::string& data)
 {
     int zero_count = 0;
     int dial = 50;
-    for (size_t pos = 0; pos < data.length(); ++pos) {
+    for (int pos = 0; pos < data.length(); ++pos) {
         const auto [sign, rotation] = parse_rotation(data, pos);
         const int to_zero_amount = dial != 0 ? sign < 0 ? dial : 100 - dial : 100;
         const int init_amount = std::min(to_zero_amount, rotation);
