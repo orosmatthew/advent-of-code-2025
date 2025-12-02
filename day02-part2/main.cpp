@@ -32,11 +32,11 @@ static uint64_t invalid_id_sum(const Range range)
     std::unordered_set<uint64_t> invalid_ids;
     const int start_digits = count_digits(range.start);
     const int end_digits = count_digits(range.end);
-    const uint64_t check_end = ten_power((end_digits + 1) / 2);
-    for (int check = 0; check < check_end; ++check) {
+    const uint64_t check_end = ten_power(end_digits / 2);
+    for (int check = 1; check < check_end; ++check) {
         const int check_digits = count_digits(check);
         auto check_times = [&](const int times) {
-            if (times == 0 || times == 1) {
+            if (times <= 1) {
                 return;
             }
             if (const uint64_t value = repeat_digits(check, times); value >= range.start && value <= range.end) {
