@@ -1,6 +1,8 @@
 #include <utils.hpp>
 
+#include <algorithm>
 #include <print>
+#include <span>
 
 static void parse_battery_bank(const std::string& data, int& pos, std::vector<uint8_t>& batteries)
 {
@@ -11,32 +13,41 @@ static void parse_battery_bank(const std::string& data, int& pos, std::vector<ui
     }
 }
 
-static int calc_largest_joltage(const std::vector<uint8_t>& batteries)
+static uint64_t combine_digits(const uint64_t first, const uint64_t second)
 {
-    int max_joltage = std::numeric_limits<int>::lowest();
-    for (int i = 0; i < batteries.size(); ++i) {
-        for (int j = i + 1; j < batteries.size(); ++j) {
-            const int combined = batteries[i] * 10 + batteries[j];
-            max_joltage = std::max(max_joltage, combined);
-        }
+    return first * ten_power(count_digits(second)) + second;
+}
+
+static uint64_t calc_largest_joltage(std::span<const uint8_t> batteries, const int count)
+{
+    assert(count > 0);
+    const std::span search_span { batteries.data(), batteries.size() - count + 1 };
+    const auto max_it = std::ranges::max_element(search_span);
+    uint64_t max_joltage = *max_it;
+    if (count > 1) {
+        assert(batteries.size() > 1);
+        const std::span<uint8_t>::difference_type max_offset = std::distance(search_span.begin(), max_it);
+        const std::span next_span { batteries.begin() + max_offset + 1, batteries.end() };
+        const uint64_t next_max_joltage = calc_largest_joltage(next_span, count - 1);
+        max_joltage = combine_digits(max_joltage, next_max_joltage);
     }
     return max_joltage;
 }
 
-static int solve(const std::string& data)
+static uint64_t solve(const std::string& data)
 {
-    int sum = 0;
-    std::vector<uint8_t> batteries;
+    uint64_t sum = 0;
+    static std::vector<uint8_t> batteries;
     for (int pos = 0; pos < data.size(); ++pos) {
         parse_battery_bank(data, pos, batteries);
-        sum += calc_largest_joltage(batteries);
+        sum += calc_largest_joltage(batteries, 2);
     }
     return sum;
 }
 
 int main()
 {
-    const std::string data = read_file("./day03-part1/input.txt");
+    const std::string data = read_file("./day03-part2/input.txt");
 #ifdef BENCHMARK
     benchmark([&] { return solve(data); }, 10000);
 #else
