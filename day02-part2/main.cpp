@@ -11,9 +11,9 @@ struct Range {
 
 static Range parse_range(const std::string& data, int& pos)
 {
-    const uint64_t start = parse_uint<uint64_t>(data, pos);
+    const auto start = parse_uint<uint64_t>(data, pos);
     ++pos; // "-"
-    const uint64_t end = parse_uint<uint64_t>(data, pos);
+    const auto end = parse_uint<uint64_t>(data, pos);
     return Range { start, end };
 }
 
