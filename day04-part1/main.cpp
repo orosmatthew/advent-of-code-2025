@@ -3,11 +3,11 @@
 #include <array>
 #include <print>
 
-struct Vector2 {
+struct Vector2i {
     int x;
     int y;
 
-    Vector2 operator+(const Vector2& other) const
+    Vector2i operator+(const Vector2i& other) const
     {
         return { x + other.x, y + other.y };
     }
@@ -16,20 +16,20 @@ struct Vector2 {
 struct Grid {
     enum State : uint8_t { empty, roll };
 
-    Vector2 size;
+    Vector2i size;
     std::vector<State> data;
 
-    State& at(const Vector2& pos)
+    State& at(const Vector2i& pos)
     {
         return data[pos.x + size.x * pos.y];
     }
 
-    [[nodiscard]] const State& at(const Vector2& pos) const
+    [[nodiscard]] const State& at(const Vector2i& pos) const
     {
         return data[pos.x + size.x * pos.y];
     }
 
-    [[nodiscard]] bool in_bounds(const Vector2& pos) const
+    [[nodiscard]] bool in_bounds(const Vector2i& pos) const
     {
         return pos.x >= 0 && pos.x < size.x && pos.y >= 0 && pos.y < size.y;
     }
@@ -67,16 +67,16 @@ static int count_accessible(const Grid& grid)
     int count = 0;
     for (int y = 0; y < grid.size.y; ++y) {
         for (int x = 0; x < grid.size.x; ++x) {
-            constexpr std::array<Vector2, 8> offsets {
+            constexpr std::array<Vector2i, 8> offsets {
                 { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } }
             };
-            const Vector2 current { x, y };
+            const Vector2i current { x, y };
             if (grid.at(current) != Grid::State::roll) {
                 continue;
             }
             uint8_t neighbor_count = 0;
-            for (const Vector2& offset : offsets) {
-                if (const Vector2 neighbor = current + offset;
+            for (const Vector2i& offset : offsets) {
+                if (const Vector2i neighbor = current + offset;
                     grid.in_bounds(neighbor) && grid.at(neighbor) == Grid::State::roll) {
                     ++neighbor_count;
                 }

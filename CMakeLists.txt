@@ -16,6 +16,9 @@ if (WIN32)
     endif ()
 endif ()
 
+add_subdirectory(external/raylib-5.5)
+add_subdirectory(external/raylib-cpp-5.5.0)
+
 include_directories(include)
 
 add_executable(day01-part1 day01-part1/main.cpp)
@@ -26,3 +29,5 @@ add_executable(day03-part1 day03-part1/main.cpp)
 add_executable(day03-part2 day03-part2/main.cpp)
 add_executable(day04-part1 day04-part1/main.cpp)
 add_executable(day04-part2 day04-part2/main.cpp)
+add_executable(day04-part2-visualization day04-part2-visualization/main.cpp)
+target_link_libraries(day04-part2-visualization PRIVATE raylib_static raylib-cpp)
