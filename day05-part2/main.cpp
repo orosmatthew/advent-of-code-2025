@@ -66,7 +66,7 @@ static uint64_t solve(const std::string& data)
     uint64_t count = 0;
     int balance = 0;
     for (size_t i = 0; i < points.size(); ++i) {
-        if (balance == 0 && (i == 0 || points[i - 1].value != points[i].value)) {
+        if (balance == 0) {
             ++count;
         }
         const auto [type, value] = points[i];
