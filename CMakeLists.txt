@@ -34,3 +34,4 @@ target_link_libraries(day04-part2-visualization PRIVATE raylib_static raylib-cpp
 add_executable(day05-part1 day05-part1/main.cpp)
 add_executable(day05-part2 day05-part2/main.cpp)
 add_executable(day06-part1 day06-part1/main.cpp)
+add_executable(day06-part2 day06-part2/main.cpp)

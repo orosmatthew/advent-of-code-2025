@@ -24,7 +24,7 @@ static void skip_spaces(const std::string& data, int& pos)
     }
 }
 
-static Grid parse_numbers(const std::string& data, int& pos)
+static Grid parse_digits(const std::string& data, int& pos)
 {
     std::vector<uint64_t> numbers;
     std::optional<int> width;
@@ -55,7 +55,7 @@ enum class Op { add, multiply };
 static uint64_t solve(const std::string& data)
 {
     int pos = 0;
-    const Grid numbers = parse_numbers(data, pos);
+    const Grid numbers = parse_digits(data, pos);
     int col_count = 0;
     uint64_t total = 0;
     for (; pos < data.size(); ++pos) {
