@@ -98,11 +98,8 @@ static std::vector<JunctionPair> create_sorted_pairs(const std::vector<Vector3u6
 
 using CircuitId = uint64_t;
 
-static std::unordered_map<Vector3u64, CircuitId, Vector3u64::Hash> create_circuits(
-    const std::vector<Vector3u64>& positions,
-    const std::vector<JunctionPair>& pairs,
-    // ReSharper disable once CppDFAConstantParameter
-    const int max_connections)
+static std::optional<JunctionPair> get_last_pair_to_fully_connect(
+    const std::vector<Vector3u64>& positions, const std::vector<JunctionPair>& pairs)
 {
     std::unordered_map<Vector3u64, CircuitId, Vector3u64::Hash> circuits;
     CircuitId circuit_id_count = 0;
@@ -110,14 +107,10 @@ static std::unordered_map<Vector3u64, CircuitId, Vector3u64::Hash> create_circui
         circuits[pos] = circuit_id_count;
         ++circuit_id_count;
     }
-    int connection_count = 0;
-    for (const auto& [first, second, distance] : pairs) {
-        if (connection_count >= max_connections) {
-            break;
-        }
-        ++connection_count;
-        const auto first_it = circuits.find(first);
-        const auto second_it = circuits.find(second);
+    std::optional<JunctionPair> last_pair;
+    for (const auto& pair : pairs) {
+        const auto first_it = circuits.find(pair.first);
+        const auto second_it = circuits.find(pair.second);
         assert(first_it != circuits.end() && second_it != circuits.end());
         const CircuitId first_id = first_it->second;
         const CircuitId second_id = second_it->second;
@@ -131,33 +124,29 @@ static std::unordered_map<Vector3u64, CircuitId, Vector3u64::Hash> create_circui
                 id = new_id;
             }
         }
+        const CircuitId check_id = circuits.begin()->second;
+        if (std::ranges::all_of(circuits, [check_id](const auto& connection) {
+                return connection.second == check_id;
+            })) {
+            last_pair = pair;
+            break;
+        }
     }
-    return circuits;
+    return last_pair;
 }
 
 static uint64_t solve(const std::string& data)
 {
     const std::vector<Vector3u64> positions = parse_positions(data);
     const std::vector<JunctionPair> pairs = create_sorted_pairs(positions);
-    const std::unordered_map<Vector3u64, CircuitId, Vector3u64::Hash> circuits
-        = create_circuits(positions, pairs, 1000);
-    std::vector<std::pair<CircuitId, int>> circuit_sizes;
-    for (const CircuitId& id : circuits | std::views::values) {
-        if (auto it = std::ranges::find_if(circuit_sizes, [id](const auto& pair) { return pair.first == id; });
-            it == circuit_sizes.end()) {
-            circuit_sizes.emplace_back(id, 1);
-        } else {
-            ++it->second;
-        }
-    }
-    std::ranges::sort(circuit_sizes, [](const auto& a, const auto& b) { return b.second < a.second; });
-    assert(circuit_sizes.size() >= 3);
-    return circuit_sizes[0].second * circuit_sizes[1].second * circuit_sizes[2].second;
+    const std::optional<JunctionPair> last_pair = get_last_pair_to_fully_connect(positions, pairs);
+    assert(last_pair.has_value());
+    return last_pair->first.x * last_pair->second.x;
 }
 
 int main()
 {
-    const std::string data = read_file("./day08-part1/input.txt");
+    const std::string data = read_file("./day08-part2/input.txt");
 #ifdef BENCHMARK
     benchmark([&] { return solve(data); }, 100);
 #else
