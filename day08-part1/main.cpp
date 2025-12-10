@@ -93,6 +93,9 @@ static std::vector<JunctionPair> create_sorted_pairs(const std::vector<Vector3u6
             if (pair.second < pair.first) {
                 std::swap(pair.first, pair.second);
             }
+            // Should assert that pair isn't already in pairs, but it is too slow.
+            // The final answer is the same without the check so the input is probably
+            // specially crafted to not have duplicates.
             pairs.emplace_back(pair);
         }
     }
