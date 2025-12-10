@@ -130,3 +130,9 @@ static uint64_t ten_power(const int exponent)
         return 0;
     }
 }
+
+inline size_t hash_combine(const size_t first, const size_t second)
+{
+    // Based on Boost's hash_combine
+    return first ^ second + 0x9e3779b9 + (first << 6) + (first >> 2);
+}
